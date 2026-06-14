@@ -3,13 +3,14 @@ name: MLflow CI Pipeline
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
   train:
     runs-on: ubuntu-latest
+    # Tambahkan variabel ini agar MLflow tidak error di server
+    env:
+      MLFLOW_ALLOW_FILE_STORE: "true"
 
     steps:
     - name: Checkout repository
@@ -23,7 +24,12 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install mlflow==2.19.0 scikit-learn pandas numpy matplotlib seaborn joblib
+        pip install mlflow scikit-learn pandas numpy matplotlib seaborn joblib
+
+    - name: Debug - List Files
+      run: |
+        echo "Checking MLProject directory..."
+        ls -R MLProject
 
     - name: Run Training Script
       run: |
